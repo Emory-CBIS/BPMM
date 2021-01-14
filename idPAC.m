@@ -46,6 +46,9 @@ dx = size(X,2);
 fprintf('running idPAC \n');
 T=size(Yall,1);
 V=size(Yall,2);
+
+a=[1:T-1]';
+weight3 = sqrt(T./(a.*(T-a)));
 nsub=size(Yall,3);
 dis_min = 20;
 kappa = zeros(V,V,T,nsub);
@@ -164,7 +167,7 @@ end
 gammabar = zeros(V,V,T,H);
 whjlt = zeros(V,V,T,H);
 siggamma = 0.1;
-for h=1:5
+for h=1:H
     for i=1:(V-1)
         for j=(i+1):V
             for t=1:T
@@ -217,7 +220,6 @@ while niters < maxits
 for i=1:(V-1)
     for j=(i+1):V
         for t=1:T
-     H =5;
     gammahi = squeeze(gamma(i,j,t,:));
     gammahj =squeeze(gammaH(i,j,t,:));
     xi = squeeze(xiH(i,j,t,:,:)); %subject-based
@@ -313,7 +315,7 @@ end
 end   %end updates of gammaH
 
 % Update GammaH
-for h=1:5
+for h=1:H
     for i=1:(V-1)
         for j=(i+1):V
             for t=1:T

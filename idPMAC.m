@@ -2,7 +2,7 @@ function [Graph,CP_all,Clusteri] = idPMAC(Yall,X,H,ncluster)
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % idPMAC.m: 
-% BPMM(Bayesian Product Mxiture Modeling with covariates for precision matrix)
+% idPMAC (Bayesian Product Mxiture Modeling with covariates for precision matrix)
 % Description: Fit a Bayesian product mixture model that imposes independent mixture priors 
 % at each time scan and uses covariates to model the mixture weights, which results 
 % in time-varying clusters of samples designed to pool information.
@@ -49,6 +49,9 @@ T=size(Yall,1);
 V=size(Yall,2);
 nsub=size(Yall,3);
 dis_min = 20;
+
+a=[1:T-1]';
+weight3 = sqrt(T./(a.*(T-a)));
 kappa = zeros(V,V,T,nsub);
 for k=1:nsub
     Y = Yall(:,:,k);
@@ -242,7 +245,6 @@ while niters < maxits
 
 for i=1:V
         for t=1:T
-     H =5;
     omegahi = squeeze(Omega(i,:,t,:));
     omegahj =squeeze(OmegaH(i,:,t,:));
     xi = squeeze(xiH(i,t,:,:)); %subject-based
@@ -337,7 +339,7 @@ Omega(:,:,t,sub)=squeeze(mean(Sig_save,3));
     end
 end
 
-for h=1:5
+for h=1:H
     sigmah = sigmaH(h);
     for i=1:(V-1)
         for j=(i+1):V

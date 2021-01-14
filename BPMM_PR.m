@@ -7,7 +7,7 @@ function [Graph,CP_all,Clusteri] = BPMMPR(Yall,H,ncluster)
 % at each time scan, which results in time-varying clusters of samples designed to pool information.
 %
 % Usage:
-% [Graph,CP_all,sub_kmeans] = BPMMPR(Yall,H);
+% [Graph,CP_all,sub_kmeans] = BPMM_PR(Yall,H);
 %
 % Input:
 % Yall          preprocessed fMRI data (T*V*Nsub), T is the total number of
@@ -44,6 +44,9 @@ fprintf('running BPMM-PR \n');
 T=size(Yall,1);
 V=size(Yall,2);
 dis_min = 20;
+
+a=[1:T-1]';
+weight3 = sqrt(T./(a.*(T-a)));
 kappa = zeros(V,V,T,nsub);
 for k=1:nsub
     Y = Yall(:,:,k);
@@ -77,7 +80,6 @@ for i=1:(V-1)
     end
 end
         
-H = 5;
 Smatrix = zeros(V,V,T,nsub);
 Omega = zeros(V,V,T,nsub);
 r1 = 0.01;
@@ -219,7 +221,6 @@ while niters < maxits
 
 for i=1:V
         for t=1:T
-     H =5;
     omegahi = squeeze(Omega(i,:,t,:));
     omegahj =squeeze(OmegaH(i,:,t,:));
     xi = squeeze(xiH(i,t,:,:)); %subject-based
@@ -298,7 +299,7 @@ end
 end   %end updates of Omega
 
 
-for h=1:5
+for h=1:H
     for i=1:(V-1)
         for j=(i+1):V
             for t=1:T

@@ -7,7 +7,7 @@ function [Graph,CP_all,Clusteri] = BPMMPC(Yall,H,ncluster)
 % at each time scan, which results in time-varying clusters of samples designed to pool information.
 %
 % Usage:
-% [Graph,CP_all,sub_kmeans] = BPMMPC(Yall,H);
+% [Graph,CP_all,sub_kmeans] = BPMM_PC(Yall,H);
 %
 % Input:
 % Yall          preprocessed fMRI data (T*V*Nsub), T is the total number of
@@ -47,6 +47,9 @@ T=size(Yall,1);
 V=size(Yall,2);
 dis_min = 20;
 kappa = zeros(V,V,T,nsub);
+
+a=[1:T-1]';
+weight3 = sqrt(T./(a.*(T-a)));
 for k=1:nsub
     Y = Yall(:,:,k);
     for i=(dis_min+1):(T-dis_min)
@@ -149,7 +152,7 @@ end
 gammabar = zeros(V,V,T,H);
 whjlt = zeros(V,V,T,H);
 siggamma = 0.1;
-for h=1:5
+for h=1:H
     for i=1:(V-1)
         for j=(i+1):V
             for t=1:T
@@ -201,7 +204,6 @@ while niters < maxits
 for i=1:(V-1)
     for j=(i+1):V
         for t=1:T
-     H =5;
     gammahi = squeeze(gamma(i,j,t,:));
     gammahj =squeeze(gammaH(i,j,t,:));
     xi = squeeze(xiH(i,j,t,:,:)); %subject-based
@@ -267,7 +269,7 @@ end
 end  
 
 % Update GammaH
-for h=1:5
+for h=1:H
     for i=1:(V-1)
         for j=(i+1):V
             for t=1:T
